@@ -233,10 +233,10 @@ request_script() {
     fi
     
     # Check if response looks like a script (should start with #! or be bash content)
-    if ! echo "$response" | head -1 | grep -q -E "(#!/|#.*bash|echo|set)"; then
-        error "Server response doesn't appear to be a valid script: $(echo "$response" | head -1)"
-        return 1
-    fi
+    #if ! echo "$response" | head -1 | grep -q -E "(#!/|#.*bash|echo|set)"; then
+    #    error "Server response doesn't appear to be a valid script: $(echo "$response" | head -1)"
+    #    return 1
+    #fi
     
     echo "$response"
 }
