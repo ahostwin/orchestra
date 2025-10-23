@@ -6,6 +6,6 @@
 
 filedatetime="$(date +%Y-%m-%d_%H-%M-%S)"
 
-echo "$filedatetime" | tee -a /var/log/test.log | tee -a /tmp/test.log
+echo "$filedatetime" | tee -a /tmp/test.log | sudo tee -a /var/log/test.log
 
 
