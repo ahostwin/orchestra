@@ -14,10 +14,11 @@ set -euo pipefail
 KEYWORD="key@ahostorchestra"
 AUTHORIZED_KEYS="$HOME/.ssh/authorized_keys"
 CLI_DIR="/tmp/orchestra"
-SERVER_URL="${AHOST_SERVER_URL:-https://your-supabase-instance.supabase.co/functions/v1/validate}"
+SERVER_URL="${AHOST_SERVER_URL:-https://your-supabase-instance.supabase.co}"
 TEMP_DIR=$(mktemp -d)
 TEMP_KEYS="$TEMP_DIR/matching_keys"
 
+ENDPOINT_ENROLL="functions/v1/enroll"
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -190,13 +191,13 @@ request_script() {
         log "DEBUG: Using access token: $access_token"
     fi
     
-    log "Sending access token to server: $SERVER_URL"
+    log "Sending access token to server: $SERVER_URL/$ENDPOINT_ENROLL"
     
     # Make curl request with timeout (no URL encoding needed for SHA256 fingerprints)
     # Debug output - show the token being sent
     if [ "${AHOST_DEBUG:-}" = "1" ]; then
         log "DEBUG: Sending token: $access_token"
-        log "DEBUG: Full request URL: $SERVER_URL?access_token=$access_token"
+        log "DEBUG: Full request URL: $SERVER_URL/$ENDPOINT_ENROLL?access_token=$access_token"
     fi
     
     # Use POST request to avoid URL length limits
@@ -204,8 +205,8 @@ request_script() {
         -X POST \
         -H "Content-Type: application/json" \
         -d "{\"access_token\":\"$access_token\"}" \
-        "$SERVER_URL" 2>/dev/null); then
-        error "Failed to connect to server: $SERVER_URL"
+        "$SERVER_URL/$ENDPOINT_ENROLL" 2>/dev/null); then
+        error "Failed to connect to server: $SERVER_URL/$ENDPOINT_ENROLL"
         return 1
     fi
     
@@ -353,7 +354,7 @@ main() {
     done
     
     # Check if SERVER_URL is configured
-    if [ "$SERVER_URL" = "https://your-supabase-instance.supabase.co/functions/v1/validate" ]; then
+    if [ "$SERVER_URL" = "https://your-supabase-instance.supabase.co" ]; then
         warn "Using default server URL. Set AHOST_SERVER_URL environment variable to configure."
     fi
     
@@ -418,7 +419,7 @@ Commands:
 
 Environment Variables:
   AHOST_SERVER_URL    Server URL for script requests
-                      (default: https://your-supabase-instance.supabase.co/functions/v1/validate)
+                      (default: https://your-supabase-instance.supabase.co)
   AHOST_KEYWORD       SSH key comment keyword (default: key@ahostorchestra)
 
 Options:
